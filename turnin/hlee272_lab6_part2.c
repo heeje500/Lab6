@@ -14,7 +14,7 @@
 #include <avr/interrupt.h>
 #endif
 
-enum States{init, zero, wait, one, wait1, two, wait2}state;
+enum States{init, zero, one, two, wait, restart}state;
 
 volatile unsigned char TimerFlag = 0;
 
