@@ -59,7 +59,7 @@ void TimerSet (unsigned long M) {
 
 void Tick() {
 
-
+unsigned char count; 
 	switch(state) { //transititons
 
 	case init:
@@ -75,54 +75,52 @@ void Tick() {
 	else {
 		state = one;
 	}
+	count = 0x01;
 	break;
 
 	case one:
 	if ((~PINA & 0x01) == 0x01) {
-		state = wait1;
+		state = wait;
 	}
 
 	else {
-		state = two;
+		if (count == 0) {
+			state = zero;
+		}
+
+		else if (count == 1) {
+			state = two;
+		}
 	}
 	break;
 
 	case two:
 	if ((~PINA & 0x01) == 0x01) {
-		state = wait2;
+		state = wait;
 	}
 
 	else {
-		state = zero;
+		state = one;
 	}
+	count = 0x00;
 	break;
 
 	case wait: 
 	if ((~PINA & 0x01) == 0x01) {
-		state = zero;
-	}
-
-	else {
 		state = wait;
 	}
-	break;
-
-	case wait1:
-	if((~PINA & 0x01) == 0x01) {
-		state = one;
-	}
 
 	else {
-		state = wait1;
+		state = restart;
 	}
 	break;
 
-	case wait2:
+	case restart:
 	if ((~PINA & 0x01) == 0x01) {
-		state = two;
+		state = zero;
 	}
 	else {
-		state = wait2;
+		state = restart;
 	}
 	break;
 		
@@ -147,17 +145,10 @@ switch(state) { //actions
 	break;
 
 	case wait:
-	PORTB = 0x01;
-	break;
-	
-	case wait1:
-	PORTB = 0x02;
 	break;
 
-	case wait2:
-	PORTB = 0x04;
+	case restart:
 	break;
-
 	default:
 	break;
 
