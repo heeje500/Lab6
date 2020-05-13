@@ -2,7 +2,7 @@
  *	Lab: 6
  *  Partner(s) Name: 
  *	Lab Section: 
- *	Assignment: Lab #6  Exercise #3
+ *	Assignment: Lab #6  Exercise #2
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -14,7 +14,7 @@
 #include <avr/interrupt.h>
 #endif
 
-enum States{init, zero, one, two, wait, restart}state;
+enum States{init, zero, one, two, wait, wait2, restart}state;
 
 volatile unsigned char TimerFlag = 0;
 
@@ -56,10 +56,9 @@ void TimerSet (unsigned long M) {
 	_avr_timer_cntcurr = _avr_timer_M;
 	}
 
-
+unsigned char count;
 void Tick() {
-
-unsigned char count; 
+ 
 	switch(state) { //transititons
 
 	case init:
@@ -75,7 +74,18 @@ unsigned char count;
 	else {
 		state = one;
 	}
-	count = 0x01;
+	count = 1;
+	break;
+
+	case two:
+	if ((~PINA & 0x01) == 0x01) {
+		state = wait;
+	}
+
+	else {
+		state = one;
+	}
+	count = 0;
 	break;
 
 	case one:
@@ -94,37 +104,37 @@ unsigned char count;
 	}
 	break;
 
-	case two:
-	if ((~PINA & 0x01) == 0x01) {
-		state = wait;
-	}
-
-	else {
-		state = one;
-	}
-	count = 0x00;
-	break;
-
 	case wait: 
 	if ((~PINA & 0x01) == 0x01) {
 		state = wait;
 	}
 
 	else {
+		state = wait2;
+	}
+	break;
+
+	case wait2: 
+	if((~PINA & 0x01) == 0x01) {
 		state = restart;
+	}
+
+	else {
+		state = wait2;
 	}
 	break;
 
 	case restart:
 	if ((~PINA & 0x01) == 0x01) {
-		state = zero;
+		state = restart;
 	}
 	else {
-		state = restart;
+		state = init;
 	}
 	break;
 		
 	default:
+	state = init;
 	break;
 }
 
@@ -145,13 +155,24 @@ switch(state) { //actions
 	break;
 
 	case wait:
+	PORTB = PORTB;
+	break;
+
+	case wait2:
 	break;
 
 	case restart:
-	break;
-	default:
+	if ((~PINA & 0x01) == 0x01) {
+		PORTB = 0x01;
+	}
+
+	else {
+		PORTB = PORTB;
+	}
 	break;
 
+	default:
+	break;
 	} 
 }
 
