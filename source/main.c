@@ -1,4 +1,4 @@
-/*	Author: eeje Lee
+/*	Author:Heeje Lee
  *	Lab: 6
  *  Partner(s) Name: 
  *	Lab Section: 
@@ -7,6 +7,7 @@
  *
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
+ *    https://youtu.be/QJ2VJfpm8NM
  */
 #include <avr/io.h>
 #ifdef _SIMULATE_
@@ -155,20 +156,12 @@ switch(state) { //actions
 	break;
 
 	case wait:
-	PORTB = PORTB;
 	break;
 
 	case wait2:
 	break;
 
 	case restart:
-	if ((~PINA & 0x01) == 0x01) {
-		PORTB = 0x01;
-	}
-
-	else {
-		PORTB = PORTB;
-	}
 	break;
 
 	default:
